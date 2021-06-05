@@ -1,4 +1,4 @@
-# chrome-ext-mv3# Auto-Tab-Refresh-Chrome-Extention
+Auto-Tab-Refresh-Chrome-Extention
 
 Description:
 This extension helps keep the session of a website, for example if your log into a bank website and want the session to stay alive,
