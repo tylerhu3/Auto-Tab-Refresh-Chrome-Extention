@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            width: 170px;
+            height: 130px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 12px;
+            border-radius: 10px;
+            background-color: pink;
+        }
+        #buttonHolder {
+            margin-top: 10px;
+            flex-direction: row;
+        }
+
+        #timeInput {
+            margin-top: 10px;
+            text-align:center;
+        }
+
+        /* #urlHolder{
+            padding-top: 10px;
+            word-wrap: break-word;  
+        } */
+
+        
+        #startButton{
+            background-color: #4CAF50;
+        }
+
+        #stopButton{
+            background-color: #f44336;
+        }
+
+        #title{
+            font-size: 15px;
+        }
+
+        #seconds{
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="title">
+        Auto Tab Refresh
+    </div>
+    
+    <div id="seconds">Seconds:</div>
+    <div><span id="timer"></span></div>
+    <input id="timeInput" type="number">
+
+    <div id="buttonHolder">
+        <button id="startButton">Start</button>
+        <button id="stopButton">Stop</button>
+    </div>
+    <script src="./popup_script.js">
+    </script>
+</body>
+
+</html>
