@@ -21,16 +21,32 @@ var interval;
 //     }
 // });
 
-async function getCurrentTab() {
-  let queryOptions = { active: true, currentWindow: true };
-  let [tab] = await chrome.tabs.query(queryOptions);
-  return tab;
+async function getCurrentTab(callback) {
+  chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+    var tab = tabs[0];
+
+    if (tab) {
+      console.log("Current Tab: ", tab);
+      callback(tab);
+
+    } else {
+      chrome.tabs.get(activeTabId, function (tab) {
+        if (tab) {
+          console.log("Active Tab: ", tab);
+          callback(tab);
+        } else {
+          console.log('No active tab identified.');
+        }
+      });
+
+    }
+  });
 }
 
 function getCurrentURL() {
   console.log("ran get currentURL");
 
-  getCurrentTab().then((e) => {
+  getCurrentTab((e) => {
     currentTab = e;
     console.log("Recieved URL", e.url);
     // if (!/^http/.test(e)){
@@ -41,7 +57,7 @@ function getCurrentURL() {
     console.log('getting current time')
     getCurrentTime();
     getSavedRefreshTime();
-  });
+  })
 }
 
 function startButtonClicked() {

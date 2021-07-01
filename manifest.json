@@ -1,23 +1,18 @@
 {
-    "name": "Refresher MV3",
+    "name": "Refresher MV2",
     "description": "Timer for page refresh",
     "version": "0.1.0",
-    "manifest_version": 3,
+    "manifest_version": 2,
     "icons": {
         "16": "./images/icon-16x16.png",
         "32": "./images/icon-32x32.png",
         "128": "./images/icon-128x128.png"
     },
     "background": {
-        "service_worker": "./background.js"
+        "scripts":[ "./background.js"]
     },
-    "action": {
-        "default_popup": "./popup.html",
-        "default_icons": {
-            "16": "./images/icon-16x16.png",
-            "32": "./images/icon-32x32.png",
-            "128": "./images/icon-128x128.png"
-        }
+    "browser_action": {
+        "default_popup":"popup.html"
     },
     "options_page": "./options.html",
     "permissions": [
@@ -25,12 +20,9 @@
         "activeTab",
         "tabs",
         "storage",
-        "scripting"
-
-    ],
-    "host_permissions": [
         "<all_urls>",
         "http://*/*", 
         "https://*/*"
+
     ]
 }
