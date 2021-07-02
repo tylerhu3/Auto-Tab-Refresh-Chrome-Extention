@@ -1,22 +1,16 @@
-console.log("This is Pop Up Script");
-
-// chrome.runtime.sendMessage({
-//     message: "get_name"
-// }, response => {
-//     if (response.message === 'success') {
-//         document.querySelector('div').innerHTML = `Hello ${response.payload}`;
-//     }
-// });
+console.log("Pop Up Script execution");
 
 var currentURL = "nothing";
 var currentTab = null;
 var seconds = null;
 var interval;
 
+
+//TODO: Move the below to foreground process, it will be use to
+//change extension icon when update is active in this tab
 // chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 //     if (changeInfo.status === 'complete' && /^http/.test(tab.url)) {
 //         console.log('tab updated from popup script')
-
 //         getCurrentURL();
 //     }
 // });
@@ -43,16 +37,16 @@ async function getCurrentTab(callback) {
   });
 }
 
+
+/*
+Get current URL of tab
+*/
 function getCurrentURL() {
-  console.log("ran get currentURL");
+  console.log("getCurrentURL executed");
 
   getCurrentTab((e) => {
     currentTab = e;
     console.log("Recieved URL", e.url);
-    // if (!/^http/.test(e)){
-    //     console.log('invalid URL')
-    // }
-    // document.getElementById("urlHolder").innerHTML = e.url;
     currentURL = e.url; // set current URL to where we are
     console.log('getting current time')
     getCurrentTime();
@@ -60,6 +54,11 @@ function getCurrentURL() {
   })
 }
 
+
+/*
+Send URL and tab to background service which will start the refresh process,
+function will also start a timer
+*/
 function startButtonClicked() {
     if(interval){
         clearInterval(interval)
@@ -89,6 +88,9 @@ function startButtonClicked() {
   }
 }
 
+/*
+Stop the timer and prevent further refresh activity
+*/
 function stopButtonClicked() {
   if(interval){
       clearInterval(interval)
@@ -97,11 +99,14 @@ function stopButtonClicked() {
   seconds = parseInt(document.getElementById("timeInput").value);
   console.log("input value: ", seconds);
   console.log("currentTab: ", currentURL);
+
+
   chrome.runtime.sendMessage(
     {
-      message: "remove_url",
+      message: "stop_single_process",
       payload: {
         url: currentURL,
+        tab: currentTab
       },
     },
     (response) => {
@@ -114,7 +119,9 @@ function stopButtonClicked() {
   );
 }
 
-
+/*
+Start a count down timer
+*/
 function startTimer(duration, display) {
     console.log('creating a new instance of timer');
   var timer = duration,
@@ -139,29 +146,37 @@ function startTimer(duration, display) {
   }, 1000);
 }
 
+/*
+Get current time before another refresh
+*/
 function getCurrentTime() {
+  console.log("getCurrentTime Execution");
     chrome.runtime.sendMessage(
     {
-        message: "check_url",
+        message: "get_tab_info",
         payload: {
-            url: currentURL
+            url: currentURL,
+            tab: currentTab
         },
     },
     (response) => {
         if (response.message === "success") {
-            console.log("sucessfully received time");
+            console.log("Sucessfully received time");
             console.log(response);
             if(response.payload.isSessionActive){
-                console.log("sucessfully received time");
+                console.log("Setting timer");
                 startTimer(response.payload.currentTime - 1, document.getElementById("timer"));
             }
         }else{
-            console.log("unsucessfully received time");
+            console.log("Unsucessfully received time");
         }
     }
     );
   }
 
+  /*
+  Get the saved reset time used for this URL previously
+  */
   async function getSavedRefreshTime() {
     chrome.runtime.sendMessage(
     {
@@ -184,7 +199,25 @@ function getCurrentTime() {
   }
 
 
+  function stopAllButtonClicked() {
+    if(interval){
+        clearInterval(interval)
+    }
+
+    console.log("Stop all Button Clicked")
+    document.getElementById("timer").textContent = ""
+  
+    chrome.runtime.sendMessage(
+      {
+        message: "stop_all_processes",
+        payload: {
+        },
+      }
+    );
+  }
+
 getCurrentURL();
+
 document.getElementById("startButton").onclick = function () {
   startButtonClicked();
 };
@@ -192,5 +225,9 @@ document.getElementById("startButton").onclick = function () {
 
 document.getElementById("stopButton").onclick = function () {
   stopButtonClicked();
+};
+
+document.getElementById("stopAllButton").onclick = function () {
+  stopAllButtonClicked();
 };
 
